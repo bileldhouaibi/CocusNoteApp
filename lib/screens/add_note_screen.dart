@@ -51,76 +51,78 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: 'Title',
-                border: OutlineInputBorder(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: _contentController,
-              maxLines: 10,
-              decoration: InputDecoration(
-                labelText: 'Content',
-                border: OutlineInputBorder(),
+              SizedBox(height: 10),
+              TextField(
+                controller: _contentController,
+                maxLines: 10,
+                decoration: InputDecoration(
+                  labelText: 'Content',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-            SizedBox(height: 10),
-            _pickedImage != null
-                ? Image.memory(_pickedImage!,
-                    height: 150, width: 150, fit: BoxFit.cover)
-                : Container(height: 150, width: 150, color: Colors.grey[300]),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('Pick Image'),
-            ),
-            SizedBox(height: 10),
-            TextField(
-              controller: _tagController,
-              decoration: InputDecoration(
-                labelText: 'Tag',
-                border: OutlineInputBorder(),
+              SizedBox(height: 10),
+              _pickedImage != null
+                  ? Image.memory(_pickedImage!,
+                      height: 150, width: 150, fit: BoxFit.cover)
+                  : Container(height: 150, width: 150, color: Colors.grey[300]),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text('Pick Image'),
               ),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: _addTag,
-              child: Text('Add Tag'),
-            ),
-            Wrap(
-              spacing: 8.0,
-              children: _tags
-                  .map((tag) => Chip(
-                        label: Text(tag),
-                        onDeleted: () => _removeTag(tag),
-                      ))
-                  .toList(),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                final note = Note(
-                  id: DateTime.now().toString(),
-                  title: _titleController.text,
-                  content: _contentController.text,
-                  image: _pickedImage,
-                  tags: _tags,
-                );
-                Provider.of<NotesProvider>(context, listen: false)
-                    .addNote(note);
-                Navigator.pop(context);
-              },
-              child: Text('Add Note'),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+              SizedBox(height: 10),
+              TextField(
+                controller: _tagController,
+                decoration: InputDecoration(
+                  labelText: 'Tag',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _addTag,
+                child: Text('Add Tag'),
+              ),
+              Wrap(
+                spacing: 8.0,
+                children: _tags
+                    .map((tag) => Chip(
+                          label: Text(tag),
+                          onDeleted: () => _removeTag(tag),
+                        ))
+                    .toList(),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  final note = Note(
+                    id: DateTime.now().toString(),
+                    title: _titleController.text,
+                    content: _contentController.text,
+                    image: _pickedImage,
+                    tags: _tags,
+                  );
+                  Provider.of<NotesProvider>(context, listen: false)
+                      .addNote(note);
+                  Navigator.pop(context);
+                },
+                child: Text('Add Note'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

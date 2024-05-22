@@ -23,4 +23,22 @@ class NotesProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  List<Note> searchNotes(String query) {
+    return _notes.where((note) {
+      return note.title.toLowerCase().contains(query.toLowerCase()) ||
+          note.content.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+  }
+
+  List<String> getAllTags() {
+    return _notes.expand((note) => note.tags).toSet().toList();
+  }
+
+  List<Note> filterNotesByTag(String? tag) {
+    if (tag == null) {
+      return _notes;
+    }
+    return _notes.where((note) => note.tags.contains(tag)).toList();
+  }
 }

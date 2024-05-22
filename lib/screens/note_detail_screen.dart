@@ -1,12 +1,32 @@
 import 'package:cocus_note_app/models/notes_model.dart';
 import 'package:cocus_note_app/screens/edit_note_screen.dart';
-
+import 'package:cocus_note_app/services/pdf_service.dart';
 import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
+import 'package:printing/printing.dart';
+import 'dart:html' as html;
 
 class NoteDetailScreen extends StatelessWidget {
   final Note note;
 
   NoteDetailScreen({required this.note});
+
+  final PdfService _pdfService = PdfService();
+
+  void _printNote() async {
+    final pdfData = await _pdfService.generatePdf(note);
+    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdfData);
+  }
+
+  void _downloadPdf() async {
+    final pdfData = await _pdfService.generatePdf(note);
+    final pdfBlob = html.Blob([pdfData], 'application/pdf');
+    final pdfUrl = html.Url.createObjectUrlFromBlob(pdfBlob);
+    final anchor = html.AnchorElement(href: pdfUrl);
+    anchor.setAttribute('download', '${note.title}.pdf');
+    anchor.click();
+    html.Url.revokeObjectUrl(pdfUrl);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +41,14 @@ class NoteDetailScreen extends StatelessWidget {
                 builder: (context) => EditNoteScreen(note: note),
               ));
             },
+          ),
+          IconButton(
+            icon: Icon(Icons.print),
+            onPressed: _printNote,
+          ),
+          IconButton(
+            icon: Icon(Icons.download),
+            onPressed: _downloadPdf,
           ),
         ],
       ),
@@ -48,6 +76,13 @@ class NoteDetailScreen extends StatelessWidget {
                   fontSize: 18,
                 ),
               ),
+              SizedBox(height: 10),
+              if (note.tags.isNotEmpty)
+                Wrap(
+                  spacing: 8.0,
+                  children:
+                      note.tags.map((tag) => Chip(label: Text(tag))).toList(),
+                ),
             ],
           ),
         ),
