@@ -1,106 +1,106 @@
 import 'package:cocus_note_app/models/notes_model.dart';
+import 'package:cocus_note_app/services/notes_services.dart';
 import 'package:flutter/foundation.dart';
 
 class NotesProvider with ChangeNotifier {
+  Note? _selectedNote;
+  Note? get selectedNote => _selectedNote;
   List<Note> _notes = [];
-  List<Note> _deletedNotes = [];
-  List<Note> _updatedNotes = [];
-  Map<String, List<Note>> _noteVersions = {};
+  List<Note> _filteredNotes = [];
+  final NoteService _noteService = NoteService();
 
-  List<Note> get notes => _notes;
-  List<Note> get deletedNotes => _deletedNotes;
-  List<Note> get updatedNotes => _updatedNotes;
+  List<Note> get notes => _filteredNotes.isEmpty ? _notes : _filteredNotes;
 
-  void addNote(Note note) {
-    _notes.add(note);
-    _noteVersions[note.id] = [note];
-    notifyListeners();
-  }
-
-  void deleteNote(String id) {
-    final noteIndex = _notes.indexWhere((note) => note.id == id);
-    if (noteIndex != -1) {
-      final note = _notes.removeAt(noteIndex);
-      _deletedNotes.add(note);
+  Future<void> fetchAndSetNotes() async {
+    try {
+      _notes = await _noteService.fetchNotes();
       notifyListeners();
+    } catch (error) {
+      throw error;
     }
   }
 
-  void updateNote(Note updatedNote) {
-    final index = _notes.indexWhere((note) => note.id == updatedNote.id);
-    if (index != -1) {
-      _updatedNotes.add(_notes[index]);
-      _notes[index] = updatedNote;
-      _noteVersions[updatedNote.id]?.add(updatedNote);
+  Future<void> addNote(Note note) async {
+    try {
+      await _noteService.addNote(note);
+      _notes.add(note);
       notifyListeners();
+    } catch (error) {
+      throw error;
     }
   }
 
-  List<String> getAllTags() {
-    return _notes.expand((note) => note.tags).toSet().toList();
-  }
-
-  List<Note> getNoteVersions(String id) {
-    return _noteVersions[id] ?? [];
-  }
-
-  void clearDeletedNotesHistory() {
-    _deletedNotes.clear();
-    notifyListeners();
-  }
-
-  void clearUpdatedNotesHistory() {
-    _updatedNotes.clear();
-    notifyListeners();
-  }
-
-  List<Note> searchNotes(String query) {
-    return _notes.where((note) {
-      return note.title.toLowerCase().contains(query.toLowerCase()) ||
-          note.content.toLowerCase().contains(query.toLowerCase());
-    }).toList();
-  }
-
-  List<Note> filterNotesByTag(String? tag) {
-    if (tag == null) {
-      return _notes;
+  Future<void> deleteNote(String id) async {
+    try {
+      await _noteService.deleteNote(id);
+      _notes.removeWhere((note) => note.id == id);
+      notifyListeners();
+    } catch (error) {
+      throw error;
     }
-    return _notes.where((note) => note.tags.contains(tag)).toList();
   }
 
-  void sortNotesByDate({bool ascending = true}) {
-    _notes.sort((a, b) => ascending
-        ? a.updatedDate.compareTo(b.updatedDate)
-        : b.updatedDate.compareTo(a.updatedDate));
-    notifyListeners();
-  }
-
-  void linkNotes(String noteId1, String noteId2) {
-    final note1 = _notes.firstWhere((note) => note.id == noteId1);
-    final note2 = _notes.firstWhere((note) => note.id == noteId2);
-
-    if (!note1.linkedNotes.contains(noteId2)) {
-      note1.linkedNotes.add(noteId2);
+  Future<void> updateNote(Note note) async {
+    try {
+      final statusCode = await _noteService.updateNote(note);
+      if (statusCode == 200 || statusCode == 204) {
+        final index = _notes.indexWhere((n) => n.id == note.id);
+        if (index >= 0) {
+          _notes[index] = note;
+          notifyListeners();
+        }
+      }
+    } catch (error) {
+      throw error;
     }
-    if (!note2.linkedNotes.contains(noteId1)) {
-      note2.linkedNotes.add(noteId1);
-    }
-    notifyListeners();
   }
 
-  void unlinkNotes(String noteId1, String noteId2) {
-    final note1 = _notes.firstWhere((note) => note.id == noteId1);
-    final note2 = _notes.firstWhere((note) => note.id == noteId2);
-
-    note1.linkedNotes.remove(noteId2);
-    note2.linkedNotes.remove(noteId1);
-    notifyListeners();
-  }
-
-  List<Note> getLinkedNotes(String noteId) {
-    final note = _notes.firstWhere((note) => note.id == noteId);
-    return note.linkedNotes
-        .map((id) => _notes.firstWhere((note) => note.id == id))
+  void searchNotes(String query) {
+    _filteredNotes = _notes
+        .where((note) =>
+            note.title.toLowerCase().contains(query.toLowerCase()) ||
+            note.content.toLowerCase().contains(query.toLowerCase()))
         .toList();
+    notifyListeners();
+  }
+
+  void filterByTag(String tag) {
+    _filteredNotes = _notes.where((note) => note.tags.contains(tag)).toList();
+    notifyListeners();
+  }
+
+  void filterByDate(DateTime startDate, DateTime endDate) {
+    _filteredNotes = _notes
+        .where((note) =>
+            DateTime.parse(note.createdDate!).isAfter(startDate) &&
+            DateTime.parse(note.createdDate!).isBefore(endDate))
+        .toList();
+    notifyListeners();
+  }
+
+  void clearFilters() {
+    _filteredNotes = [];
+    notifyListeners();
+  }
+
+  Future<void> fetchNoteDetails(String id) async {
+    try {
+      _selectedNote = await _noteService.fetchNoteDetails(id);
+      notifyListeners();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  void sortByMostRecent() {
+    _notes.sort((a, b) => DateTime.parse(b.createdDate!)
+        .compareTo(DateTime.parse(a.createdDate!)));
+    notifyListeners();
+  }
+
+  void sortByOldest() {
+    _notes.sort((a, b) => DateTime.parse(a.createdDate!)
+        .compareTo(DateTime.parse(b.createdDate!)));
+    notifyListeners();
   }
 }

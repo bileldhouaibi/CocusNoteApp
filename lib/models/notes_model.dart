@@ -1,50 +1,40 @@
-import 'dart:typed_data';
+import 'package:cocus_note_app/utils/helper.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'notes_model.g.dart';
+
+@JsonSerializable()
 class Note {
-  String id;
+  @JsonKey(name: '_id')
+  String? id;
   String title;
   String content;
-  Uint8List? image;
+  String? image;
   List<String> tags;
-  DateTime createdDate;
-  DateTime updatedDate;
-  List<String> linkedNotes;
+  bool? isArchived;
+  @JsonKey(name: 'createdAt')
+  String? createdDate;
+  @JsonKey(name: 'updatedAt')
+  String? updatedDate;
 
   Note({
-    required this.id,
+    this.id,
     required this.title,
     required this.content,
     this.image,
     this.tags = const [],
-    required this.createdDate,
-    required this.updatedDate,
-    this.linkedNotes = const [],
+    this.isArchived,
+    this.createdDate,
+    this.updatedDate,
   });
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Note &&
-        other.id == id &&
-        other.title == title &&
-        other.content == content &&
-        other.image == image &&
-        other.tags == tags &&
-        other.createdDate == createdDate &&
-        other.updatedDate == updatedDate &&
-        other.linkedNotes == linkedNotes;
+  factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
+  Map<String, dynamic> toJson() => _$NoteToJson(this);
+  void decryptContent(EncryptionHelper helper) {
+    content = helper.decrypt(content);
   }
 
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        title.hashCode ^
-        content.hashCode ^
-        image.hashCode ^
-        tags.hashCode ^
-        createdDate.hashCode ^
-        updatedDate.hashCode ^
-        linkedNotes.hashCode;
+  void encryptContent(EncryptionHelper helper) {
+    content = helper.encrypt(content);
   }
 }
