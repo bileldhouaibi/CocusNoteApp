@@ -129,6 +129,8 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                   content: _contentController.text,
                   image: _pickedImage ?? _existingImage,
                   tags: _tags,
+                  createdDate: widget.note.createdDate,
+                  updatedDate: DateTime.now(),
                 );
                 Provider.of<NotesProvider>(context, listen: false)
                     .updateNote(updatedNote);

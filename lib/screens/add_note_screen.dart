@@ -111,6 +111,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                     content: _contentController.text,
                     image: _pickedImage,
                     tags: _tags,
+                    createdDate: DateTime.now(),
+                    updatedDate: DateTime.now(),
                   );
                   Provider.of<NotesProvider>(context, listen: false)
                       .addNote(note);

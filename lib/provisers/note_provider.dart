@@ -18,10 +18,9 @@ class NotesProvider with ChangeNotifier {
   }
 
   void deleteNote(String id) {
-    final note =
-        _notes.firstWhere((note) => note.id == id, orElse: () => null as Note);
-    if (note != null) {
-      _notes.remove(note);
+    final noteIndex = _notes.indexWhere((note) => note.id == id);
+    if (noteIndex != -1) {
+      final note = _notes.removeAt(noteIndex);
       _deletedNotes.add(note);
       notifyListeners();
     }
@@ -67,5 +66,41 @@ class NotesProvider with ChangeNotifier {
       return _notes;
     }
     return _notes.where((note) => note.tags.contains(tag)).toList();
+  }
+
+  void sortNotesByDate({bool ascending = true}) {
+    _notes.sort((a, b) => ascending
+        ? a.updatedDate.compareTo(b.updatedDate)
+        : b.updatedDate.compareTo(a.updatedDate));
+    notifyListeners();
+  }
+
+  void linkNotes(String noteId1, String noteId2) {
+    final note1 = _notes.firstWhere((note) => note.id == noteId1);
+    final note2 = _notes.firstWhere((note) => note.id == noteId2);
+
+    if (!note1.linkedNotes.contains(noteId2)) {
+      note1.linkedNotes.add(noteId2);
+    }
+    if (!note2.linkedNotes.contains(noteId1)) {
+      note2.linkedNotes.add(noteId1);
+    }
+    notifyListeners();
+  }
+
+  void unlinkNotes(String noteId1, String noteId2) {
+    final note1 = _notes.firstWhere((note) => note.id == noteId1);
+    final note2 = _notes.firstWhere((note) => note.id == noteId2);
+
+    note1.linkedNotes.remove(noteId2);
+    note2.linkedNotes.remove(noteId1);
+    notifyListeners();
+  }
+
+  List<Note> getLinkedNotes(String noteId) {
+    final note = _notes.firstWhere((note) => note.id == noteId);
+    return note.linkedNotes
+        .map((id) => _notes.firstWhere((note) => note.id == id))
+        .toList();
   }
 }

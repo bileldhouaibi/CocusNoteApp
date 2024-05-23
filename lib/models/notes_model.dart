@@ -6,7 +6,9 @@ class Note {
   String content;
   Uint8List? image;
   List<String> tags;
-  List<NoteVersion> versions;
+  DateTime createdDate;
+  DateTime updatedDate;
+  List<String> linkedNotes;
 
   Note({
     required this.id,
@@ -14,22 +16,35 @@ class Note {
     required this.content,
     this.image,
     this.tags = const [],
-    this.versions = const [],
+    required this.createdDate,
+    required this.updatedDate,
+    this.linkedNotes = const [],
   });
-}
 
-class NoteVersion {
-  final String title;
-  final String content;
-  final Uint8List? image;
-  final List<String> tags;
-  final DateTime timestamp;
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-  NoteVersion({
-    required this.title,
-    required this.content,
-    this.image,
-    required this.tags,
-    required this.timestamp,
-  });
+    return other is Note &&
+        other.id == id &&
+        other.title == title &&
+        other.content == content &&
+        other.image == image &&
+        other.tags == tags &&
+        other.createdDate == createdDate &&
+        other.updatedDate == updatedDate &&
+        other.linkedNotes == linkedNotes;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        title.hashCode ^
+        content.hashCode ^
+        image.hashCode ^
+        tags.hashCode ^
+        createdDate.hashCode ^
+        updatedDate.hashCode ^
+        linkedNotes.hashCode;
+  }
 }

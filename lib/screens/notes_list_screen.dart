@@ -14,6 +14,7 @@ class NotesListScreen extends StatefulWidget {
 class _NotesListScreenState extends State<NotesListScreen> {
   String? _selectedTag;
   String _searchQuery = '';
+  bool _sortAscending = true;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +32,8 @@ class _NotesListScreenState extends State<NotesListScreen> {
             note.content.toLowerCase().contains(_searchQuery.toLowerCase());
       }).toList();
     }
+
+    notesProvider.sortNotesByDate(ascending: _sortAscending);
 
     List<String> allTags = notesProvider.getAllTags();
 
@@ -52,6 +55,15 @@ class _NotesListScreenState extends State<NotesListScreen> {
             icon: Icon(Icons.update),
             onPressed: () {
               Navigator.of(context).pushNamed('/updated-notes');
+            },
+          ),
+          IconButton(
+            icon: Icon(
+                _sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+            onPressed: () {
+              setState(() {
+                _sortAscending = !_sortAscending;
+              });
             },
           ),
         ],
@@ -120,6 +132,14 @@ class _NotesListScreenState extends State<NotesListScreen> {
                           children: note.tags
                               .map((tag) => Chip(label: Text(tag)))
                               .toList(),
+                        ),
+                        Text(
+                          'Created: ${note.createdDate}',
+                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                        ),
+                        Text(
+                          'Updated: ${note.updatedDate}',
+                          style: TextStyle(fontSize: 12, color: Colors.black54),
                         ),
                       ],
                     ),

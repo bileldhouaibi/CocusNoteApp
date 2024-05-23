@@ -36,8 +36,62 @@ class NoteDetailScreen extends StatelessWidget {
     Navigator.pop(context);
   }
 
+  void _linkNoteDialog(BuildContext context) {
+    final notesProvider = Provider.of<NotesProvider>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        String? selectedNoteId;
+        return AlertDialog(
+          title: Text('Link Note'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return DropdownButton<String>(
+                hint: Text('Select Note to Link'),
+                value: selectedNoteId,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedNoteId = newValue;
+                  });
+                },
+                items: notesProvider.notes
+                    .where((n) => n.id != note.id)
+                    .map<DropdownMenuItem<String>>((Note note) {
+                  return DropdownMenuItem<String>(
+                    value: note.id,
+                    child: Text(note.title),
+                  );
+                }).toList(),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (selectedNoteId != null) {
+                  notesProvider.linkNotes(note.id, selectedNoteId!);
+                  Navigator.of(ctx).pop();
+                }
+              },
+              child: Text('Link'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final notesProvider = Provider.of<NotesProvider>(context);
+    final linkedNotes = notesProvider.getLinkedNotes(note.id);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(note.title),
@@ -104,21 +158,35 @@ class NoteDetailScreen extends StatelessWidget {
                 ),
               SizedBox(height: 20),
               Text(
-                'Previous Versions:',
+                'Created: ${note.createdDate}',
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
+              Text(
+                'Updated: ${note.updatedDate}',
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Linked Notes:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
-              ...Provider.of<NotesProvider>(context)
-                  .getNoteVersions(note.id)
-                  .map((version) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    version.title,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                );
-              }).toList(),
+              Column(
+                children: linkedNotes.map((linkedNote) {
+                  return ListTile(
+                    title: Text(linkedNote.title),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            NoteDetailScreen(note: linkedNote),
+                      ));
+                    },
+                  );
+                }).toList(),
+              ),
+              TextButton(
+                onPressed: () => _linkNoteDialog(context),
+                child: Text('Link Another Note'),
+              ),
             ],
           ),
         ),

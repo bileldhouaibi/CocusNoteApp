@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-final ColorScheme colorScheme = ColorScheme.light(
+const ColorScheme colorScheme = ColorScheme.light(
   primary: Color(0xFFFFA726), // Orange color for primary actions
   onPrimary: Colors.white,
   secondary: Color(0xFFF5F5F5), // Light grey for backgrounds
@@ -15,21 +15,21 @@ final ThemeData themeData = ThemeData(
   useMaterial3: true,
   colorScheme: colorScheme,
   typography: Typography.material2021(
-    black: TextTheme(
-      headline1: TextStyle(
+    black: const TextTheme(
+      displayLarge: TextStyle(
           fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black),
-      headline2: TextStyle(
+      displayMedium: TextStyle(
           fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-      bodyText1: TextStyle(fontSize: 16, color: Colors.black),
-      bodyText2: TextStyle(fontSize: 14, color: Colors.black54),
+      bodyLarge: TextStyle(fontSize: 16, color: Colors.black),
+      bodyMedium: TextStyle(fontSize: 14, color: Colors.black54),
     ),
-    white: TextTheme(
-      headline1: TextStyle(
+    white: const TextTheme(
+      displayLarge: TextStyle(
           fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-      headline2: TextStyle(
+      displayMedium: TextStyle(
           fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-      bodyText1: TextStyle(fontSize: 16, color: Colors.white),
-      bodyText2: TextStyle(fontSize: 14, color: Colors.white70),
+      bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
+      bodyMedium: TextStyle(fontSize: 14, color: Colors.white70),
     ),
   ),
   buttonTheme: ButtonThemeData(
@@ -44,15 +44,15 @@ final ThemeData themeData = ThemeData(
     disabledColor: Colors.grey,
     selectedColor: colorScheme.primary,
     secondarySelectedColor: colorScheme.primary.withOpacity(0.48),
-    padding: EdgeInsets.all(8),
+    padding: const EdgeInsets.all(8),
     labelStyle: TextStyle(color: colorScheme.onSecondary),
     secondaryLabelStyle: TextStyle(color: colorScheme.onPrimary),
     brightness: Brightness.light,
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
-      primary: colorScheme.primary,
-      onPrimary: colorScheme.onPrimary,
+      foregroundColor: colorScheme.onPrimary,
+      backgroundColor: colorScheme.primary,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),

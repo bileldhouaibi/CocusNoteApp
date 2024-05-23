@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => NotesProvider(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Notes App',
         theme: themeData,
         home: NotesListScreen(),
