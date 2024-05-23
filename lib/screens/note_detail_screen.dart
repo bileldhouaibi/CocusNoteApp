@@ -1,10 +1,13 @@
 import 'package:cocus_note_app/models/notes_model.dart';
+import 'package:cocus_note_app/provisers/note_provider.dart';
 import 'package:cocus_note_app/screens/edit_note_screen.dart';
 import 'package:cocus_note_app/services/pdf_service.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'dart:html' as html;
+
+import 'package:provider/provider.dart';
 
 class NoteDetailScreen extends StatelessWidget {
   final Note note;
@@ -26,6 +29,11 @@ class NoteDetailScreen extends StatelessWidget {
     anchor.setAttribute('download', '${note.title}.pdf');
     anchor.click();
     html.Url.revokeObjectUrl(pdfUrl);
+  }
+
+  void _deleteNote(BuildContext context) {
+    Provider.of<NotesProvider>(context, listen: false).deleteNote(note.id);
+    Navigator.pop(context);
   }
 
   @override
@@ -50,6 +58,10 @@ class NoteDetailScreen extends StatelessWidget {
             icon: Icon(Icons.download),
             onPressed: _downloadPdf,
           ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () => _deleteNote(context),
+          ),
         ],
       ),
       body: Padding(
@@ -65,24 +77,48 @@ class NoteDetailScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               if (note.image != null)
-                Image.memory(note.image!,
-                    height: 150, width: 150, fit: BoxFit.cover),
-              SizedBox(height: 10),
+                Center(
+                  child: Image.memory(
+                    note.image!,
+                    height: 200,
+                    width: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              SizedBox(height: 20),
               Text(
                 note.content,
                 style: TextStyle(
                   fontSize: 18,
+                  height: 1.5,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               if (note.tags.isNotEmpty)
                 Wrap(
                   spacing: 8.0,
                   children:
                       note.tags.map((tag) => Chip(label: Text(tag))).toList(),
                 ),
+              SizedBox(height: 20),
+              Text(
+                'Previous Versions:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              ...Provider.of<NotesProvider>(context)
+                  .getNoteVersions(note.id)
+                  .map((version) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(
+                    version.title,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                );
+              }).toList(),
             ],
           ),
         ),

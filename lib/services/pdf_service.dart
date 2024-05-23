@@ -1,7 +1,8 @@
 import 'dart:typed_data';
+
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf/pdf.dart';
-import 'package:notes_app/models/note_model.dart';
+
+import '../models/notes_model.dart';
 
 class PdfService {
   Future<Uint8List> generatePdf(Note note) async {
@@ -18,13 +19,17 @@ class PdfService {
                       fontSize: 24, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 20),
               if (note.image != null)
-                pw.Image(
-                  pw.MemoryImage(note.image!),
-                  height: 150,
-                  width: 150,
+                pw.Center(
+                  child: pw.Image(
+                    pw.MemoryImage(note.image!),
+                    height: 200,
+                    width: 200,
+                    fit: pw.BoxFit.cover,
+                  ),
                 ),
               pw.SizedBox(height: 20),
-              pw.Text(note.content, style: pw.TextStyle(fontSize: 18)),
+              pw.Text(note.content,
+                  style: pw.TextStyle(fontSize: 18, height: 1.5)),
               pw.SizedBox(height: 20),
               if (note.tags.isNotEmpty)
                 pw.Wrap(
@@ -40,6 +45,20 @@ class PdfService {
                           ))
                       .toList(),
                 ),
+              pw.SizedBox(height: 20),
+              pw.Text('Previous Versions:',
+                  style: pw.TextStyle(
+                      fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 10),
+              ...note.content.split('\n').map((version) {
+                return pw.Container(
+                  margin: const pw.EdgeInsets.only(bottom: 8.0),
+                  child: pw.Text(
+                    version,
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                  ),
+                );
+              }).toList(),
             ],
           );
         },

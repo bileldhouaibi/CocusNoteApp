@@ -19,7 +19,11 @@ class _NotesListScreenState extends State<NotesListScreen> {
   Widget build(BuildContext context) {
     final notesProvider = Provider.of<NotesProvider>(context);
 
-    List<Note> notes = notesProvider.filterNotesByTag(_selectedTag);
+    List<Note> notes = _selectedTag == null
+        ? notesProvider.notes
+        : notesProvider.notes
+            .where((note) => note.tags.contains(_selectedTag!))
+            .toList();
 
     if (_searchQuery.isNotEmpty) {
       notes = notes.where((note) {
@@ -32,29 +36,22 @@ class _NotesListScreenState extends State<NotesListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notes'),
+        title: Text('Notes App'),
         actions: [
-          DropdownButton<String>(
-            value: _selectedTag,
-            hint: Text('Filter by Tag'),
-            onChanged: (String? newTag) {
-              setState(() {
-                _selectedTag = newTag;
-              });
-            },
-            items: allTags.map<DropdownMenuItem<String>>((String tag) {
-              return DropdownMenuItem<String>(
-                value: tag,
-                child: Text(tag),
-              );
-            }).toList(),
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.clear),
+            icon: Icon(Icons.history),
             onPressed: () {
-              setState(() {
-                _selectedTag = null;
-              });
+              Navigator.of(context).pushNamed('/deleted-notes');
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.update),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/updated-notes');
             },
           ),
         ],
@@ -73,6 +70,24 @@ class _NotesListScreenState extends State<NotesListScreen> {
                   _searchQuery = value;
                 });
               },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DropdownButton<String>(
+              value: _selectedTag,
+              hint: Text('Filter by Tag'),
+              onChanged: (String? newTag) {
+                setState(() {
+                  _selectedTag = newTag;
+                });
+              },
+              items: allTags.map<DropdownMenuItem<String>>((String tag) {
+                return DropdownMenuItem<String>(
+                  value: tag,
+                  child: Text(tag),
+                );
+              }).toList(),
             ),
           ),
           Expanded(
@@ -98,8 +113,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
                           note.content,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
-                          style:
-                              TextStyle(fontSize: 14, color: Colors.grey[700]),
+                          style: TextStyle(fontSize: 14, color: Colors.black54),
                         ),
                         Wrap(
                           spacing: 6.0,
