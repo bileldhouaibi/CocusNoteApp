@@ -109,9 +109,15 @@ class _NotesListScreenState extends State<NotesListScreen> {
                     }).toList(),
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () => _selectDate(context),
-                  child: Text('Select Date'),
+                //clear filters button
+                IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    setState(() {
+                      _selectedTag = null;
+                      notesProvider.clearFilters();
+                    });
+                  },
                 ),
               ],
             ),

@@ -29,16 +29,17 @@ class Note {
   });
   DateTime parseDate(String dateStr) {
     try {
-      return DateFormat('EEEE, dd \'de\' MMMM \'de\' yyyy', 'pt_BR')
-          .parse(dateStr);
+      return DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+          .parseUtc(dateStr)
+          .toLocal();
     } catch (e) {
-      return DateTime.now(); // Fallback in case of parsing error
+      return DateTime.now();
     }
   }
 
-  factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
-  Map<String, dynamic> toJson() => _$NoteToJson(this);
-
   DateTime get createdDateTime => parseDate(createdDate!);
   DateTime get updatedDateTime => parseDate(updatedDate!);
+
+  factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
+  Map<String, dynamic> toJson() => _$NoteToJson(this);
 }
