@@ -1,4 +1,4 @@
-import 'package:cocus_note_app/utils/helper.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'notes_model.g.dart';
@@ -27,14 +27,18 @@ class Note {
     this.createdDate,
     this.updatedDate,
   });
+  DateTime parseDate(String dateStr) {
+    try {
+      return DateFormat('EEEE, dd \'de\' MMMM \'de\' yyyy', 'pt_BR')
+          .parse(dateStr);
+    } catch (e) {
+      return DateTime.now(); // Fallback in case of parsing error
+    }
+  }
 
   factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
   Map<String, dynamic> toJson() => _$NoteToJson(this);
-  void decryptContent(EncryptionHelper helper) {
-    content = helper.decrypt(content);
-  }
 
-  void encryptContent(EncryptionHelper helper) {
-    content = helper.encrypt(content);
-  }
+  DateTime get createdDateTime => parseDate(createdDate!);
+  DateTime get updatedDateTime => parseDate(updatedDate!);
 }

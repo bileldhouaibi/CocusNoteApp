@@ -3,17 +3,26 @@ import 'package:cocus_note_app/services/notes_services.dart';
 import 'package:flutter/foundation.dart';
 
 class NotesProvider with ChangeNotifier {
-  Note? _selectedNote;
-  Note? get selectedNote => _selectedNote;
   List<Note> _notes = [];
   List<Note> _filteredNotes = [];
+  Note? _selectedNote;
   final NoteService _noteService = NoteService();
 
   List<Note> get notes => _filteredNotes.isEmpty ? _notes : _filteredNotes;
+  Note? get selectedNote => _selectedNote;
 
   Future<void> fetchAndSetNotes() async {
     try {
       _notes = await _noteService.fetchNotes();
+      notifyListeners();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<void> fetchNoteDetails(String id) async {
+    try {
+      _selectedNote = await _noteService.fetchNoteDetails(id);
       notifyListeners();
     } catch (error) {
       throw error;
@@ -69,38 +78,18 @@ class NotesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void filterByDate(DateTime startDate, DateTime endDate) {
-    _filteredNotes = _notes
-        .where((note) =>
-            DateTime.parse(note.createdDate!).isAfter(startDate) &&
-            DateTime.parse(note.createdDate!).isBefore(endDate))
-        .toList();
+  void filterByDate(DateTime selectedDate) {
+    _filteredNotes = _notes.where((note) {
+      final noteDate = note.createdDateTime;
+      return noteDate.year == selectedDate.year &&
+          noteDate.month == selectedDate.month &&
+          noteDate.day == selectedDate.day;
+    }).toList();
     notifyListeners();
   }
 
   void clearFilters() {
     _filteredNotes = [];
-    notifyListeners();
-  }
-
-  Future<void> fetchNoteDetails(String id) async {
-    try {
-      _selectedNote = await _noteService.fetchNoteDetails(id);
-      notifyListeners();
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  void sortByMostRecent() {
-    _notes.sort((a, b) => DateTime.parse(b.createdDate!)
-        .compareTo(DateTime.parse(a.createdDate!)));
-    notifyListeners();
-  }
-
-  void sortByOldest() {
-    _notes.sort((a, b) => DateTime.parse(a.createdDate!)
-        .compareTo(DateTime.parse(b.createdDate!)));
     notifyListeners();
   }
 }

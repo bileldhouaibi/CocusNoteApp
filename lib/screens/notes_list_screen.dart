@@ -14,11 +14,27 @@ class NotesListScreen extends StatefulWidget {
 class _NotesListScreenState extends State<NotesListScreen> {
   String _searchQuery = '';
   String? _selectedTag;
+  DateTime? _selectedDate;
 
   @override
   void initState() {
     super.initState();
     Provider.of<NotesProvider>(context, listen: false).fetchAndSetNotes();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        Provider.of<NotesProvider>(context, listen: false).filterByDate(picked);
+      });
+    }
   }
 
   @override
@@ -94,17 +110,8 @@ class _NotesListScreenState extends State<NotesListScreen> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    notesProvider.sortByMostRecent();
-                  },
-                  child: Text('Most Recent'),
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    notesProvider.sortByOldest();
-                  },
-                  child: Text('Oldest'),
+                  onPressed: () => _selectDate(context),
+                  child: Text('Select Date'),
                 ),
               ],
             ),

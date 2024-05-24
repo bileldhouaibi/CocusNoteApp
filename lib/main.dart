@@ -19,6 +19,13 @@ class MyApp extends StatelessWidget {
         title: 'Notes App',
         theme: themeData,
         home: NotesListScreen(),
+        onGenerateRoute: (settings) {
+          if (settings.name?.startsWith('/note-detail/') == true) {
+            final noteId = settings.name?.replaceFirst('/note-detail/', '');
+            if (noteId != null) {}
+          }
+          return null;
+        },
       ),
     );
   }
