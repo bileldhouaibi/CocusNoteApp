@@ -10,16 +10,16 @@ import '../provisers/note_provider.dart';
 class NoteDetailScreen extends StatelessWidget {
   final String noteId;
 
-  NoteDetailScreen({required this.noteId});
+  const NoteDetailScreen({super.key, required this.noteId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Note Details'),
+        title: const Text('Note Details'),
         actions: [
           IconButton(
-            icon: Icon(Icons.print),
+            icon: const Icon(Icons.print),
             onPressed: () async {
               final notesProvider =
                   Provider.of<NotesProvider>(context, listen: false);
@@ -31,7 +31,7 @@ class NoteDetailScreen extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: Icon(Icons.download),
+            icon: const Icon(Icons.download),
             onPressed: () async {
               final notesProvider =
                   Provider.of<NotesProvider>(context, listen: false);
@@ -50,9 +50,9 @@ class NoteDetailScreen extends StatelessWidget {
             .fetchNoteDetails(noteId),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.error != null) {
-            return Center(child: Text('An error occurred!'));
+            return const Center(child: Text('An error occurred!'));
           } else {
             return Consumer<NotesProvider>(
               builder: (ctx, notesProvider, child) {
@@ -64,10 +64,10 @@ class NoteDetailScreen extends StatelessWidget {
                     children: [
                       Text(
                         note.title,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 24, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Expanded(
                         child: Markdown(
                           data: note.content,
@@ -75,7 +75,7 @@ class NoteDetailScreen extends StatelessWidget {
                               MarkdownStyleSheet.fromTheme(Theme.of(context)),
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Wrap(
                         spacing: 6.0,
                         runSpacing: -8.0,
@@ -86,27 +86,27 @@ class NoteDetailScreen extends StatelessWidget {
                           );
                         }).toList(),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Row(
                         children: [
-                          Icon(Icons.date_range, color: Colors.green),
-                          SizedBox(width: 8),
+                          const Icon(Icons.date_range, color: Colors.green),
+                          const SizedBox(width: 8),
                           Text(
                             'Created: ${note.createdDate}',
-                            style:
-                                TextStyle(fontSize: 14, color: Colors.black54),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.black54),
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.update, color: Colors.orange),
-                          SizedBox(width: 8),
+                          const Icon(Icons.update, color: Colors.orange),
+                          const SizedBox(width: 8),
                           Text(
                             'Updated: ${note.updatedDate}',
-                            style:
-                                TextStyle(fontSize: 14, color: Colors.black54),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.black54),
                           ),
                         ],
                       ),

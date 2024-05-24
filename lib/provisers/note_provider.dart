@@ -16,7 +16,7 @@ class NotesProvider with ChangeNotifier {
       _notes = await _noteService.fetchNotes();
       notifyListeners();
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
@@ -25,7 +25,7 @@ class NotesProvider with ChangeNotifier {
       _selectedNote = await _noteService.fetchNoteDetails(id);
       notifyListeners();
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
@@ -35,8 +35,19 @@ class NotesProvider with ChangeNotifier {
       _notes.add(note);
       notifyListeners();
     } catch (error) {
-      throw error;
+      rethrow;
     }
+  }
+
+  // Add these methods for testing purposes
+  void addNoteForTest(Note note) {
+    _notes.add(note);
+    notifyListeners();
+  }
+
+  void deleteNoteForTest(String id) {
+    _notes.removeWhere((note) => note.id == id);
+    notifyListeners();
   }
 
   Future<void> deleteNote(String id) async {
@@ -45,7 +56,7 @@ class NotesProvider with ChangeNotifier {
       _notes.removeWhere((note) => note.id == id);
       notifyListeners();
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
@@ -60,7 +71,7 @@ class NotesProvider with ChangeNotifier {
         }
       }
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
@@ -80,7 +91,8 @@ class NotesProvider with ChangeNotifier {
 
   void filterByDate(DateTime selectedDate) {
     _filteredNotes = _notes.where((note) {
-      final noteDate = note.createdDateTime;
+      final noteDate =
+          DateTime.parse(note.createdDate!); // Ensure proper parsing
       return noteDate.year == selectedDate.year &&
           noteDate.month == selectedDate.month &&
           noteDate.day == selectedDate.day;

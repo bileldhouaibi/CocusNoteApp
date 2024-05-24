@@ -18,7 +18,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Note'),
+        title: const Text('Add Note'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -30,7 +30,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               // Title input field
               TextFormField(
                 controller: _titleController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Title',
                   border: OutlineInputBorder(),
                 ),
@@ -41,12 +41,12 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
 
               // Content input field
               TextFormField(
                 controller: _contentController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Content',
                   border: OutlineInputBorder(),
                 ),
@@ -58,17 +58,17 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
 
               // Tags input field
               TextFormField(
                 controller: _tagsController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Tags (comma separated)',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 32.0),
+              const SizedBox(height: 32.0),
 
               // Save button
               Consumer<NotesProvider>(
@@ -96,7 +96,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                       Navigator.of(context).pop();
                     }
                   },
-                  child: Text('Save Note'),
+                  child: const Text('Save Note'),
                 ),
               ),
             ],
